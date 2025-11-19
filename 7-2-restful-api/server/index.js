@@ -32,9 +32,20 @@ app.get("/api/songs", async (req, res) => {
 
 // api/songs (Insert song)
 
+
 // /api/songs/:id (Update song)
 
 
 // /api/songs/:id (Delete song)
+app.delete("/api/songs/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Song.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ error: "Song not found" });
+    res.json({ message: "Song deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete song" });
+  }
+});
 
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
