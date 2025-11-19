@@ -15,6 +15,19 @@ app.use(express.json());
 await connectDB(process.env.MONGO_URL);
 
 // api/songs (Read all songs)
+app.get("/api/songs", async (req, res) => {
+  try {
+    const songs = await Song.find().sort({ createdAt: -1 });
+    res.json(songs.map(s => ({
+      id: s._id,
+      title: s.title,
+      artist: s.artist,
+      year: s.year
+    })));
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch songs" });
+  }
+});
 
 
 // api/songs (Insert song)
