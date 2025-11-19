@@ -31,24 +31,21 @@ app.get("/api/songs", async (req, res) => {
 
 
 // api/songs (Insert song)
-app.put("/api/songs/:id", async (req, res) => {
+app.post("/api/songs", async (req, res) => {
   try {
-    const { id } = req.params;
     const { title, artist, year } = req.body;
-    const updated = await Song.findByIdAndUpdate(
-      id,
-      { title, artist, year },
-      { new: true, runValidators: true }
-    );
-    if (!updated) return res.status(404).json({ error: "Song not found" });
-    res.json({
-      id: updated._id,
-      title: updated.title,
-      artist: updated.artist,
-      year: updated.year
+    if (!title || !artist) {
+      return res.status(400).json({ error: "Title and artist are required" });
+    }
+    const song = await Song.create({ title, artist, year });
+    res.status(201).json({
+      id: song._id,
+      title: song.title,
+      artist: song.artist,
+      year: song.year
     });
   } catch (err) {
-    res.status(500).json({ error: "Failed to update song" });
+    res.status(500).json({ error: "Failed to create song" });
   }
 });
 
