@@ -34,7 +34,26 @@ app.get("/api/songs", async (req, res) => {
 
 
 // /api/songs/:id (Update song)
-
+app.put("/api/songs/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, artist, year } = req.body;
+    const updated = await Song.findByIdAndUpdate(
+      id,
+      { title, artist, year },
+      { new: true, runValidators: true }
+    );
+    if (!updated) return res.status(404).json({ error: "Song not found" });
+    res.json({
+      id: updated._id,
+      title: updated.title,
+      artist: updated.artist,
+      year: updated.year
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update song" });
+  }
+});
 
 // /api/songs/:id (Delete song)
 app.delete("/api/songs/:id", async (req, res) => {
